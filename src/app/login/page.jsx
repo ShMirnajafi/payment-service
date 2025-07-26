@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {logEvent} from "@/app/lib/logger";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -15,6 +16,7 @@ export default function LoginPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
         });
+        logEvent("login", {username})
         if (!res.ok) return alert("نام کاربری یا رمز عبور اشتباه است");
         const { token } = await res.json();
         localStorage.setItem("token", token);

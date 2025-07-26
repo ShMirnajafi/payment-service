@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {logEvent} from "@/app/lib/logger";
 
 export default function PaymentGateway() {
     const { paymentId } = useParams();
@@ -59,6 +60,7 @@ export default function PaymentGateway() {
         // حذف نگاشت پرداخت و بازگشت به صفحه سفارش‌ها
         delete payments[paymentId];
         localStorage.setItem("payments", JSON.stringify(payments));
+        logEvent("finish payment", {paymentId})
         router.push("/orders");
     }
 
@@ -70,6 +72,7 @@ export default function PaymentGateway() {
             delete payments[paymentId];
             localStorage.setItem("payments", JSON.stringify(payments));
         }
+        logEvent("cancel payment", {paymentId})
         router.push("/orders");
     }
 
