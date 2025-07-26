@@ -1,4 +1,3 @@
-// app/api/payments/[paymentId]/route.js
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { payments } from "../../_data";
