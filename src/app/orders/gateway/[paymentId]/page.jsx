@@ -12,7 +12,6 @@ export default function PaymentGateway() {
     const [isRecharge, setIsRecharge] = useState(false);
     const [amount,     setAmount]     = useState(0);
 
-    // فرم کارت
     const [cardNumber, setCardNumber] = useState("");
     const [cardHolder, setCardHolder] = useState("");
     const [expiry,     setExpiry]     = useState("");
@@ -24,30 +23,25 @@ export default function PaymentGateway() {
         if (!payment) return;
 
         if (payment.type === "order") {
-            // بارگذاری اطلاعات سفارش
             const orders = JSON.parse(localStorage.getItem("orders") || "[]");
             const found  = orders.find(o => o.id === payment.orderId);
             if (found) setOrder(found);
             setAmount(payment.amount);
         } else {
-            // حالت شارژ حساب
             setIsRecharge(true);
             setAmount(payment.amount);
         }
     }, [paymentId]);
 
-    // نهایی‌سازی تراکنش
     function finalizePayment() {
         const payments = JSON.parse(localStorage.getItem("payments") || "{}");
         const payment  = payments[paymentId];
 
         if (isRecharge) {
-            // بروزرسانی موجودی کاربر
             const user = JSON.parse(localStorage.getItem("user") || '{"balance":0}');
             user.balance += payment.amount;
             localStorage.setItem("user", JSON.stringify(user));
         } else {
-            // پرداخت سفارش
             let orders = JSON.parse(localStorage.getItem("orders") || "[]");
             orders = orders.map(o =>
                 o.id === payment.orderId
@@ -57,17 +51,14 @@ export default function PaymentGateway() {
             localStorage.setItem("orders", JSON.stringify(orders));
         }
 
-        // حذف نگاشت پرداخت و بازگشت به صفحه سفارش‌ها
         delete payments[paymentId];
         localStorage.setItem("payments", JSON.stringify(payments));
         logEvent("finish payment", {paymentId})
         router.push("/orders");
     }
 
-    // لغو تراکنش
     function handleCancel() {
         const payments = JSON.parse(localStorage.getItem("payments") || "{}");
-        // برای شارژ، نگاشت حذف شود
         if (isRecharge) {
             delete payments[paymentId];
             localStorage.setItem("payments", JSON.stringify(payments));
